@@ -3,6 +3,7 @@ import { createWebHistory, createRouter } from "vue-router";
 import ListBook from "@/views/BookView/ListBook.vue";
 import AddBook from "@/views/BookView/AddBookView.vue";
 import EditBook from "@/views/BookView/EditBookView.vue";
+import BorrowBook from "@/views/BookView/BorrowBook.vue";
 
 import LoginView from "@/views/StaffView/LoginView.vue";
 import ListStaff from "@/views/StaffView/ListStaff.vue";
@@ -10,7 +11,6 @@ import AddStaff from "@/views/StaffView/AddStaff.vue";
 import EditStaff from "@/views/StaffView/EditStaff.vue";
 
 import BorrowManagement from "@/views/BorrowView/BorrowManagement.vue";
-
 
 const routes = [
     {
@@ -27,6 +27,11 @@ const routes = [
         path: "/book/edit/:id",
         name: "Edit book",
         component: EditBook
+    },
+    {
+        path: "/book/borrow/:id",
+        name: "Borrow book",
+        component: BorrowBook
     },
     {
         path: "/login",

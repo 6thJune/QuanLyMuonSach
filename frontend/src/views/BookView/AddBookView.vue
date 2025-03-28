@@ -15,8 +15,15 @@ export default {
             successMessage: ''
         };
     },
+    computed: {
+        isLoggedIn() {
+            return !!localStorage.getItem('token'); // Kiểm tra nếu có token thì trả về true
+        }
+    },
     async created() {
-        await this.fetchPublishers();
+        if (this.isLoggedIn) {
+            await this.fetchPublishers();
+        }
     },
     methods: {
         async fetchPublishers() {
@@ -39,7 +46,7 @@ export default {
                     DonGia: parseFloat(this.DonGia)
                 };
 
-                const response = await axios.post('/api/books', newBook, {
+                await axios.post('/api/books', newBook, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -69,47 +76,54 @@ export default {
 <template>
     <div class="container mt-4">
         <h2 class="mb-3">Thêm Sách</h2>
-        <form @submit.prevent="addBook">
-            <div class="mb-3">
-                <label class="form-label">Tên Sách</label>
-                <input type="text" v-model="TenSach" class="form-control" required />
-            </div>
 
-            <div class="mb-3">
-                <label class="form-label">Tác Giả</label>
-                <input type="text" v-model="TacGia" class="form-control" required />
-            </div>
+        <div v-if="isLoggedIn">
+            <form @submit.prevent="addBook">
+                <div class="mb-3">
+                    <label class="form-label">Tên Sách</label>
+                    <input type="text" v-model="TenSach" class="form-control" required />
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Nhà Xuất Bản</label>
-                <select v-model="MaNXB" class="form-select" required>
-                    <option value="" disabled>Chọn nhà xuất bản</option>
-                    <option v-for="publisher in publishers" :key="publisher._id" :value="publisher._id">
-                        {{ publisher.TenNXB }}
-                    </option>
-                </select>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Tác Giả</label>
+                    <input type="text" v-model="TacGia" class="form-control" required />
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Số Quyển</label>
-                <input type="number" v-model="SoQuyen" class="form-control" min="1" required />
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Nhà Xuất Bản</label>
+                    <select v-model="MaNXB" class="form-select" required>
+                        <option value="" disabled>Chọn nhà xuất bản</option>
+                        <option v-for="publisher in publishers" :key="publisher._id" :value="publisher._id">
+                            {{ publisher.TenNXB }}
+                        </option>
+                    </select>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Năm Xuất Bản</label>
-                <input type="number" v-model="NamXuatBan" class="form-control" min="1900" max="2099" required />
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Số Quyển</label>
+                    <input type="number" v-model="SoQuyen" class="form-control" min="1" required />
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Đơn Giá</label>
-                <input type="number" v-model="DonGia" class="form-control" min="0" step="1000" required />
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Năm Xuất Bản</label>
+                    <input type="number" v-model="NamXuatBan" class="form-control" min="1900" max="2099" required />
+                </div>
 
-            <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
-            <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+                <div class="mb-3">
+                    <label class="form-label">Đơn Giá</label>
+                    <input type="number" v-model="DonGia" class="form-control" min="0" step="1000" required />
+                </div>
 
-            <button type="submit" class="btn btn-success">Thêm Sách</button>
-            <router-link to="/" class="btn btn-secondary ms-2">Hủy</router-link>
-        </form>
+                <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+                <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+
+                <button type="submit" class="btn btn-success">Thêm Sách</button>
+                <router-link to="/" class="btn btn-secondary ms-2">Hủy</router-link>
+            </form>
+        </div>
+
+        <div v-else class="alert alert-warning text-center">
+            <h4>Chỉ có nhân viên mới được sử dụng chức năng này!</h4>
+        </div>
     </div>
 </template>

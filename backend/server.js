@@ -12,11 +12,12 @@ connectDB();
 const bookRoutes = require('./routes/book.route');
 const publisherRoutes = require('./routes/publisher.route');
 const staffRoutes = require('./routes/staff.route');
-
+const borrowRoutes = require('./routes/borrow.route');
 
 app.use('/api/books', bookRoutes);
 app.use('/api/publishers', publisherRoutes);
 app.use('/api/staff', staffRoutes);
+app.use('/api/borrow', borrowRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

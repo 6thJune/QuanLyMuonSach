@@ -7,20 +7,19 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
+                    <li class="nav-item mx-1">
                         <router-link to="/" class="nav-link" active-class="active-nav">Sách</router-link>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item mx-1">
                         <router-link to="/staff" class="nav-link" active-class="active-nav">Nhân viên</router-link>
                     </li>
-                    <li class="nav-item">
-                        <router-link to="/borrow" class="nav-link" active-class="active-nav">Danh sách
-                            mượn</router-link>
+                    <li class="nav-item mx-1">
+                        <router-link to="/borrow" class="nav-link" active-class="active-nav">Đơn mượn sách</router-link>
                     </li>
-                    <li class="nav-item" v-if="isLoggedIn">
+                    <li class="nav-item mx-1" v-if="isLoggedIn">
                         <button @click="logout" class="btn btn-outline-light">Đăng xuất</button>
                     </li>
-                    <li class="nav-item" v-else>
+                    <li class="nav-item mx-1" v-else>
                         <router-link to="/login" class="nav-link" active-class="active-nav">Đăng nhập</router-link>
                     </li>
                 </ul>
@@ -51,7 +50,7 @@ export default {
         logout() {
             localStorage.removeItem("token");
             this.isLoggedIn = false;
-            this.$router.push("/login");
+            this.$router.push("/");
         }
     }
 };

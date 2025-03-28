@@ -7,10 +7,13 @@ dotenv.config();
 // Lấy danh sách nhân viên
 exports.getAllStaff = async (req, res) => {
     try {
-        const staff = await NHANVIEN.find();
-        res.status(200).json(staff);
+        const staffList = await NHANVIEN.find();
+        // Kiểm tra nhân viên đang đăng nhập (từ middleware verifyToken)
+        const currentStaff = req.staff ? await NHANVIEN.findById(req.staff.id) : null;
+
+        res.json({ staffList, currentStaff });
     } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi lấy danh sách nhân viên', error });
+        res.status(500).json({ message: 'Lỗi khi lấy danh sách nhân viên!', error: error.message });
     }
 };
 

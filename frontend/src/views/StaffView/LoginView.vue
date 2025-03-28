@@ -35,8 +35,8 @@ export default {
             <div class="col-md-4">
                 <form @submit.prevent="login" class="border rounded-3 p-5">
                     <div class="mb-3">
-                        <label class="form-label">Mã nhân viên</label>
-                        <input type="text" v-model="maSo" class="form-control" placeholder="NV123" required />
+                        <label class="form-label">Mã nhân viên (VD: NV123)</label>
+                        <input type="text" v-model="maSo" class="form-control" required />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Mật khẩu</label>
