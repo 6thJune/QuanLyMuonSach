@@ -59,6 +59,7 @@ export default {
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Tên Sách</th>
                     <th>Tác Giả</th>
                     <th>Nhà Xuất Bản</th>
@@ -67,7 +68,8 @@ export default {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="book in books" :key="book._id">
+                <tr v-for="(book, index) in books" :key="book._id">
+                    <td>{{ index + 1 }}</td>
                     <td>{{ book.TenSach }}</td>
                     <td>{{ book.TacGia }}</td>
                     <td>{{ book.MaNXB?.TenNXB || 'Không xác định' }}</td>

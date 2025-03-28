@@ -12,6 +12,9 @@ export default {
     computed: {
         isLoggedIn() {
             return !!localStorage.getItem('token');
+        },
+        isManager() {
+            return this.currentStaff && this.currentStaff.ChucVu === "Quản lý";
         }
     },
     async created() {
@@ -34,6 +37,11 @@ export default {
             }
         },
         async deleteStaff(id) {
+            if (!this.isManager) {
+                alert('Bạn không có quyền xóa nhân viên!');
+                return;
+            }
+
             if (!confirm('Bạn có chắc chắn muốn xóa nhân viên này?')) return;
             try {
                 const token = localStorage.getItem('token');
@@ -59,18 +67,19 @@ export default {
         <div v-if="currentStaff" class="alert alert-info d-flex align-items-center">
             <p class="mb-0 fw-bold">
                 <i class="fa-solid fa-circle-info"></i>
-                Nhân viên đang truy cập: {{ currentStaff.MSNV }} - {{ currentStaff.HoTenNV }}
+                Đang truy cập: {{ currentStaff.MSNV }} - {{ currentStaff.HoTenNV }} ({{ currentStaff.ChucVu }})
             </p>
         </div>
 
         <div v-if="isLoggedIn">
-            <router-link to="/staff/add" class="btn btn-success mb-3">
+            <router-link v-if="isManager" to="/staff/add" class="btn btn-success mb-3">
                 <i class="fa-solid fa-plus"></i>
                 Thêm Nhân Viên
             </router-link>
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Mã NV</th>
                         <th>Họ Tên</th>
                         <th>Chức Vụ</th>
@@ -80,22 +89,29 @@ export default {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="staff in staffList" :key="staff.MSNV">
+                    <tr v-for="(staff, index) in staffList" :key="staff.MSNV">
+                        <td>{{ index + 1 }}</td>
                         <td>{{ staff.MSNV }}</td>
                         <td>{{ staff.HoTenNV }}</td>
                         <td>{{ staff.ChucVu }}</td>
                         <td>{{ staff.DiaChi }}</td>
                         <td>{{ staff.SoDienThoai }}</td>
                         <td>
-                            <router-link :to="`/staff/edit/${staff._id}`"
+                            <router-link
+                                v-if="isManager"
+                                :to="`/staff/edit/${staff._id}`"
                                 class="btn btn-warning btn-sm mx-2">
                                 <i class="fa-solid fa-pencil"></i>
                                 Sửa
                             </router-link>
-                            <button @click="deleteStaff(staff._id)" class="btn btn-danger btn-sm">
+                            <button
+                                v-if="isManager"
+                                @click="deleteStaff(staff._id)"
+                                class="btn btn-danger btn-sm">
                                 <i class="fa-solid fa-trash"></i>
                                 Xóa
                             </button>
+                            <span v-else class="text-muted">Chỉ dành cho quản lý</span>
                         </td>
                     </tr>
                 </tbody>

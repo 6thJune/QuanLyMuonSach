@@ -5,6 +5,8 @@ export default {
     data() {
         return {
             borrowRequests: [],
+            searchResults: [],
+            searchPhone: "",
             isLoggedIn: false,
         };
     },
@@ -23,6 +25,23 @@ export default {
                 this.borrowRequests = response.data;
             } catch (error) {
                 console.error('Lỗi khi lấy danh sách đơn mượn:', error);
+            }
+        },
+        async searchByPhone() {
+            if (!this.searchPhone.trim()) {
+                alert('Vui lòng nhập số điện thoại!');
+                return;
+            }
+
+            try {
+                const response = await axios.get(`/api/borrow/phone/${this.searchPhone}`);
+                this.searchResults = response.data;
+                if (this.searchResults.length === 0) {
+                    alert('Không tìm thấy đơn mượn nào với số điện thoại này!');
+                }
+            } catch (error) {
+                console.error('Lỗi khi tra cứu đơn mượn:', error);
+                alert('Không tìm thấy đơn mượn!');
             }
         },
         async approveBorrow(requestId) {
@@ -96,45 +115,58 @@ export default {
             <i class="fa-solid fa-list"></i>
             Đơn mượn sách
         </h2>
+
+        <!-- Tìm kiếm theo số điện thoại -->
+        <div class="mb-3 d-flex justify-content-center align-items-center gap-2">
+            <input v-model="searchPhone" 
+                class="form-control w-50 rounded-pill px-3 shadow-sm"
+                placeholder="Nhập số điện thoại để tra cứu..." />
+            <button @click="searchByPhone" 
+                    class="btn btn-primary rounded-pill px-4 shadow-sm">
+                <i class="fa-solid fa-search"></i> Tra cứu
+            </button>
+        </div>
+
+        <!-- Kết quả tra cứu -->
+        <div v-if="searchResults.length > 0">
+            <h5 class="text-success">Kết quả tìm kiếm:</h5>
+            <table class="table table-striped">
+                <tbody>
+                    <tr v-for="borrow in searchResults" :key="borrow._id">
+                        <td>{{ borrow.MaDocGia?.HoLot || '' }} {{ borrow.MaDocGia?.Ten || '' }}</td>
+                        <td>{{ borrow.MaSach?.TenSach || 'Không xác định' }}</td>
+                        <td>{{ borrow.NgayMuon ? new Date(borrow.NgayMuon).toLocaleDateString() : 'Chưa duyệt' }}</td>
+                        <td>{{ borrow.NgayTra ? new Date(borrow.NgayTra).toLocaleDateString() : '-' }}</td>
+                        <td v-if="borrow.NgayTra" class="text-success fw-bold">Đã trả</td>
+                        <td v-else class="text-warning fw-bold">Chưa trả</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Danh sách tất cả đơn mượn -->
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Tên độc giả</th>
                     <th>Tên sách</th>
                     <th>Ngày mượn</th>
-                    <th>Ngày trả</th> <!-- Cột mới -->
-                    <th>Hành động</th>
+                    <th>Ngày trả</th>
+                    <th>Trạng thái</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="borrow in borrowRequests" :key="borrow._id">
-                    <td>{{ borrow.MaDocGia?.HoLot || 'Không xác định' }} {{ borrow.MaDocGia?.Ten || 'Không xác định' }}</td>
+                <tr v-for="(borrow, index) in borrowRequests" :key="borrow._id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ borrow.MaDocGia?.HoLot || '' }} {{ borrow.MaDocGia?.Ten || '' }}</td>
                     <td>{{ borrow.MaSach?.TenSach || 'Không xác định' }}</td>
                     <td>{{ borrow.NgayMuon ? new Date(borrow.NgayMuon).toLocaleDateString() : 'Chưa duyệt' }}</td>
-                    <td>{{ borrow.NgayTra ? new Date(borrow.NgayTra).toLocaleDateString() : '-' }}</td> <!-- Ngày Trả -->
-                    <td>
-                        <button v-if="isLoggedIn && !borrow.NgayMuon"
-                            @click="approveBorrow(borrow._id)"
-                            class="btn btn-success btn-sm mx-1">
-                            <i class="fa-solid fa-check"></i>
-                            Duyệt
-                        </button>
-                        <button v-if="isLoggedIn && !borrow.NgayMuon"
-                            @click="rejectBorrow(borrow._id)"
-                            class="btn btn-danger btn-sm mx-1">
-                            <i class="fa-solid fa-xmark"></i>
-                            Từ chối
-                        </button>
-                        <button v-if="isLoggedIn && borrow.NgayMuon && !borrow.NgayTra"
-                            @click="returnBook(borrow._id)"
-                            class="btn btn-warning btn-sm mx-1">
-                            <i class="fa-solid fa-check"></i>
-                            Trả sách
-                        </button>
-                        <span v-if="borrow.NgayTra" class="text-success fw-bold">Đã trả</span>
-                    </td>
+                    <td>{{ borrow.NgayTra ? new Date(borrow.NgayTra).toLocaleDateString() : '-' }}</td>
+                    <td v-if="borrow.NgayTra" class="text-success fw-bold">Đã trả</td>
+                    <td v-else class="text-warning fw-bold">Chưa trả</td>
                 </tr>
             </tbody>
-        </table>
+        </table>    
     </div>
 </template>

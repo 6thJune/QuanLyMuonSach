@@ -11,6 +11,36 @@ exports.getAllBorrow = async (req, res) => {
     }
 };
 
+exports.getBorrowByPhone = async (req, res) => {
+    try {
+        const { DienThoai } = req.params; // Nhận số điện thoại từ URL
+
+        if (!DienThoai) {
+            return res.status(400).json({ message: 'Vui lòng cung cấp số điện thoại!' });
+        }
+
+        // Tìm độc giả có số điện thoại tương ứng
+        const reader = await DocGia.findOne({ DienThoai });
+        if (!reader) {
+            return res.status(404).json({ message: 'Không tìm thấy độc giả với số điện thoại này!' });
+        }
+
+        // Tìm tất cả đơn mượn của độc giả
+        const borrowRequests = await TheoDoiMuonSach.find({ MaDocGia: reader._id })
+            .populate('MaDocGia')
+            .populate('MaSach');
+
+        if (borrowRequests.length === 0) {
+            return res.status(404).json({ message: 'Không có đơn mượn nào cho số điện thoại này!' });
+        }
+
+        res.status(200).json(borrowRequests);
+    } catch (error) {
+        console.error('Lỗi khi tra cứu mượn sách:', error);
+        res.status(500).json({ message: 'Lỗi server!' });
+    }
+};
+
 exports.borrowRequest = async (req, res) => {
     try {
         const { MaSach, MaDocGia, HoLot, Ten, NgaySinh, Phai, DiaChi, DienThoai } = req.body;

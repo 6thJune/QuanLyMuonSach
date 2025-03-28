@@ -7,5 +7,6 @@ router.post('/', borrowController.borrowRequest);
 router.put('/:id', borrowController.approveBorrow);
 router.delete('/:id', borrowController.rejectBorrow);
 router.put('/return/:id', borrowController.returnBook);
+router.get('/phone/:DienThoai', borrowController.getBorrowByPhone);
 
 module.exports = router;
