@@ -119,10 +119,10 @@ export default {
         <!-- Tìm kiếm theo số điện thoại -->
         <div class="mb-3 d-flex justify-content-center align-items-center gap-2">
             <input v-model="searchPhone" 
-                class="form-control w-50 rounded-pill px-3 shadow-sm"
-                placeholder="Nhập số điện thoại để tra cứu..." />
+                class="form-control w-50 rounded-pill px-3"
+                placeholder="Số điện thoại đăng ký mượn sách..." />
             <button @click="searchByPhone" 
-                    class="btn btn-primary rounded-pill px-4 shadow-sm">
+                    class="btn btn-primary rounded-pill px-4">
                 <i class="fa-solid fa-search"></i> Tra cứu
             </button>
         </div>

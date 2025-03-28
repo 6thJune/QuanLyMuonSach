@@ -4,11 +4,22 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            books: []
+            books: [],
+            searchQuery: ''
         };
     },
     async created() {
         await this.fetchBooks();
+    },
+    computed: {
+        filteredBooks() {
+            if (!this.searchQuery.trim()) {
+                return this.books;
+            }
+            return this.books.filter(book =>
+                book.TenSach.toLowerCase().includes(this.searchQuery.toLowerCase())
+            );
+        }
     },
     methods: {
         async fetchBooks() {
@@ -51,6 +62,12 @@ export default {
             <i class="fa-solid fa-book"></i>
             Tất cả sách
         </h2>
+
+        <!-- Ô tìm kiếm tự động -->
+        <div class="mb-3">
+            <input v-model="searchQuery" class="form-control w-50" placeholder="Tên sách..." />
+        </div>
+
         <router-link to="/book/add" class="btn btn-success mb-3">
             <i class="fa-solid fa-plus"></i>
             Thêm Sách
@@ -63,18 +80,18 @@ export default {
                     <th>Tên Sách</th>
                     <th>Tác Giả</th>
                     <th>Nhà Xuất Bản</th>
-                    <th>Số Quyển</th>
-                    <th>Hành Động</th>
+                    <th class="text-center">Số Quyển</th>
+                    <th class="text-center">Hành Động</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(book, index) in books" :key="book._id">
+                <tr v-for="(book, index) in filteredBooks" :key="book._id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ book.TenSach }}</td>
                     <td>{{ book.TacGia }}</td>
                     <td>{{ book.MaNXB?.TenNXB || 'Không xác định' }}</td>
-                    <td>{{ book.SoQuyen }}</td>
-                    <td>
+                    <td class="text-center">{{ book.SoQuyen }}</td>
+                    <td class="text-center">
                         <router-link :to="`/book/edit/${book._id}`" class="btn btn-warning btn-sm">
                             <i class="fa-solid fa-pencil"></i>
                             Sửa
