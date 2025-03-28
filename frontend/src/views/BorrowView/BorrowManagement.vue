@@ -116,6 +116,7 @@ export default {
                         <button v-if="isLoggedIn && !borrow.NgayMuon"
                             @click="approveBorrow(borrow._id)"
                             class="btn btn-success btn-sm mx-1">
+                            <i class="fa-solid fa-check"></i>
                             Duyệt
                         </button>
                         <button v-if="isLoggedIn && !borrow.NgayMuon"
