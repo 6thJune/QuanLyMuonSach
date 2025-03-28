@@ -131,14 +131,37 @@ export default {
         <div v-if="searchResults.length > 0">
             <h5 class="text-success">Kết quả tìm kiếm:</h5>
             <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tên độc giả</th>
+                        <th>Tên sách</th>
+                        <th>Ngày mượn</th>
+                        <th>Ngày trả</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
                 <tbody>
-                    <tr v-for="borrow in searchResults" :key="borrow._id">
+                    <tr v-for="(borrow, index) in searchResults" :key="borrow._id">
+                        <td>{{ index + 1 }}</td>
                         <td>{{ borrow.MaDocGia?.HoLot || '' }} {{ borrow.MaDocGia?.Ten || '' }}</td>
                         <td>{{ borrow.MaSach?.TenSach || 'Không xác định' }}</td>
                         <td>{{ borrow.NgayMuon ? new Date(borrow.NgayMuon).toLocaleDateString() : 'Chưa duyệt' }}</td>
                         <td>{{ borrow.NgayTra ? new Date(borrow.NgayTra).toLocaleDateString() : '-' }}</td>
                         <td v-if="borrow.NgayTra" class="text-success fw-bold">Đã trả</td>
                         <td v-else class="text-warning fw-bold">Chưa trả</td>
+                        <td class="text-center">
+                            <button v-if="!borrow.NgayMuon" @click="approveBorrow(borrow._id)" class="btn btn-success btn-sm">
+                                <i class="fa-solid fa-check"></i> Duyệt
+                            </button>
+                            <button v-if="!borrow.NgayMuon" @click="rejectBorrow(borrow._id)" class="btn btn-danger btn-sm ms-2">
+                                <i class="fa-solid fa-times"></i> Không duyệt
+                            </button>
+                            <button v-if="borrow.NgayMuon && !borrow.NgayTra" @click="returnBook(borrow._id)" class="btn btn-warning btn-sm ms-2">
+                                <i class="fa-solid fa-undo"></i> Trả sách
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -154,6 +177,7 @@ export default {
                     <th>Ngày mượn</th>
                     <th>Ngày trả</th>
                     <th>Trạng thái</th>
+                    <th class="text-center">Hành động</th>
                 </tr>
             </thead>
             <tbody>
@@ -165,6 +189,17 @@ export default {
                     <td>{{ borrow.NgayTra ? new Date(borrow.NgayTra).toLocaleDateString() : '-' }}</td>
                     <td v-if="borrow.NgayTra" class="text-success fw-bold">Đã trả</td>
                     <td v-else class="text-warning fw-bold">Chưa trả</td>
+                    <td class="text-center">
+                        <button v-if="!borrow.NgayMuon" @click="approveBorrow(borrow._id)" class="btn btn-success btn-sm">
+                            <i class="fa-solid fa-check"></i> Duyệt
+                        </button>
+                        <button v-if="!borrow.NgayMuon" @click="rejectBorrow(borrow._id)" class="btn btn-danger btn-sm ms-2">
+                            <i class="fa-solid fa-times"></i> Không duyệt
+                        </button>
+                        <button v-if="borrow.NgayMuon && !borrow.NgayTra" @click="returnBook(borrow._id)" class="btn btn-warning btn-sm ms-2">
+                            <i class="fa-solid fa-undo"></i> Trả sách
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>    
